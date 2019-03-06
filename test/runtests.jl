@@ -102,4 +102,12 @@ names = (:x,:y,:z)
 lengths = (5,10,15)
 lengths2 = (5,10,15,2)
 @test_throws MethodError create_partition(lengths2,names)
+names2 = (:a,:b)
+lengths2 = (2,3)
+part = create_partition2(lengths,lengths2)
+@test length(part) == 6
+part = create_partition2(lengths,lengths2,names,names2)
+@test length(part) == 6
+@test part.xa == (1:5,1:2)
+@test length.(part.zb) == (15,3)
 end
