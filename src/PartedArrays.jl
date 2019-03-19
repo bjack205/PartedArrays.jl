@@ -1,6 +1,5 @@
 module PartedArrays
-
-export
+    export
         BlockArray,
         BlockMatrix,
         BlockVector,
@@ -36,8 +35,9 @@ export
     setindex!(A::BlockArray, v, I::Vararg{Int, N}) where N = A.A[I[1],I[2]] = v
     IndexStyle(::BlockArray) = IndexCartesian()
     length(A::BlockArray) = length(A.A)
-    Base.show(io,A::BlockArray) = show(io,A.A)
-    Base.show(io::IO, T::MIME{Symbol("text/plain")}, X::BlockMatrix) = show(io, T::MIME"text/plain", X.A)
+    Base.show(io::IO,A::BlockArray) = show(io::IO,A.A)
+    # Base.show(io::IO, T::MIME{Symbol("text/plain")}, X::BlockMatrix) = show(io, T::MIME"text/plain", X.A)
+    # display(A::Array{BlockArray,N} where N) = display(A.A)
     +(A::BlockArray,B::Matrix) = A.A + B
     +(B::Matrix,A::BlockArray) = A.A + B
     getindex(A::BlockArray, p::Symbol) = view(A.A,getfield(A.parts,p)...)
