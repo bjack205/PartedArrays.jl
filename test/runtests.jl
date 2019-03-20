@@ -42,6 +42,14 @@ Z = BlockArray(V,[3,4],[:x,:y])
 @test Z + Z == 2V
 @test length(Z) == 7
 @test size(Z) == (7,)
+
+# Test multiplication
+function testfun(V::BlockArray,a)
+    V.A'a
+end
+a = ones(7)
+@inferred testfun(Z,a)
+
 end
 
 @testset "Matrix" begin
