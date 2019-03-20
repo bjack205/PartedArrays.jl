@@ -23,8 +23,8 @@ module PartedArrays
         BlockArray(A,parts)
     end
     BlockArray(A::AbstractArray,lengths::Vector{Int},names::Vector{Symbol}) = BlockArray(A,Tuple(lengths),Tuple(names))
-    BlockVector{T} = BlockArray{T,1}
-    BlockMatrix{T} = BlockArray{T,2}
+    BlockVector{T,M} = BlockArray{T,1,M}
+    BlockMatrix{T,M} = BlockArray{T,2,M}
 
     size(A::BlockArray) = size(A.A)
     getindex(A::BlockArray, i::Int) = getindex(A.A, i)
