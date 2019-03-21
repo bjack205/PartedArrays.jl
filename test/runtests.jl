@@ -50,6 +50,23 @@ end
 a = ones(7)
 @inferred testfun(Z,a)
 
+# Copying
+Z2 = copy(Z)
+@test Z2 isa BlockArray
+@test Z2.A == Z.A
+@test !(Z2.A === Z.A)
+Z2 .= rand(1:7,7)
+Zs = [Z,Z2]
+Zs2 = copy(Zs)
+@test Zs2[1].A == Zs[1].A
+@test Zs2[1].A === Zs[1].A
+@test Zs2[2].A === Zs[2].A
+Zs2 = deepcopy(Zs)
+@test Zs2[1].A == Zs[1].A
+@test !(Zs2[1].A === Zs[1].A)
+@test !(Zs2[2].A === Zs[2].A)
+@test Zs2 isa Vector{BlockArray{Int,1,Vector{Int}}}
+
 end
 
 @testset "Matrix" begin

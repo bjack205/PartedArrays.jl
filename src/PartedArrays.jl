@@ -42,6 +42,7 @@ module PartedArrays
     +(B::Matrix,A::BlockArray) = A.A + B
     getindex(A::BlockArray, p::Symbol) = view(A.A,getfield(A.parts,p)...)
     getindex(A::BlockVector, p::Symbol) = view(A.A,getfield(A.parts,p))
+    Base.copy(A::BlockArray) = BlockArray(copy(A.A),A.parts)
     function Base.getproperty(A::BlockArray{T,N}, p::Symbol) where {T,N}
         if p == :A || p == :parts
             getfield(A,p)
