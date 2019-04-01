@@ -1,6 +1,13 @@
 using PartedArrays
 using Test
 
+function myfun(a,b)
+    c = [1,3,5,6]
+    d = a*b
+    e = c .* d
+    return e
+end
+
 @testset "Vector" begin
 # Vector
 x,y = collect(1:3),[5,10,1,8]
@@ -56,6 +63,7 @@ Z2 = copy(Z)
 @test Z2.A == Z.A
 @test !(Z2.A === Z.A)
 Z2 .= rand(1:7,7)
+@test Z2.x != Z.x
 Zs = [Z,Z2]
 Zs2 = copy(Zs)
 @test Zs2[1].A == Zs[1].A
