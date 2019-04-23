@@ -49,6 +49,7 @@ Z = BlockArray(V,[3,4],[:x,:y])
 @test Z + Z == 2V
 @test length(Z) == 7
 @test size(Z) == (7,)
+@inferred getindex(Z,:x)
 
 # Test multiplication
 function testfun(V::BlockArray,a)
@@ -73,7 +74,15 @@ Zs2 = deepcopy(Zs)
 @test Zs2[1].A == Zs[1].A
 @test !(Zs2[1].A === Zs[1].A)
 @test !(Zs2[2].A === Zs[2].A)
-@test Zs2 isa Vector{BlockArray{Int,1,Vector{Int}}}
+@test Zs2 isa Vector{BlockArray{Int,1,Vector{Int},P}} where P <: NamedTuple
+
+PartedVecTraj{T} = Vector{BlockArray{Int,1,Vector{Int},P}} where P <: NamedTuple
+
+struct vars{T}
+    X::PartedVecTraj{T}
+end
+v = vars(Zs2)
+@inferred rand(3,3)*v.X[1].x
 
 end
 

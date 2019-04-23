@@ -10,9 +10,9 @@ module PartedArrays
 
     import Base: size, getindex, setindex!, length, IndexStyle, +, -, getfield
 
-    struct BlockArray{T,N,M<:AbstractArray{T,N}} <: AbstractArray{T,N}
+    struct BlockArray{T,N,M<:AbstractArray{T,N},P<:NamedTuple} <: AbstractArray{T,N}
         A::M
-        parts::NamedTuple
+        parts::P
     end
     function BlockArray(A::AbstractMatrix,lengths::NTuple{N,Int},names::NTuple{N,Symbol}) where {N,T}
         parts = create_partition2(lengths,names)
