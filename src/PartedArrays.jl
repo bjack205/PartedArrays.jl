@@ -10,9 +10,66 @@ module PartedArrays
 
     import Base: size, getindex, setindex!, length, IndexStyle, +, -, getfield
 
-    struct BlockArray{T,N,M<:AbstractArray{T,N},P<:NamedTuple} <: AbstractArray{T,N}
+    struct PartedArray{T,N,M<:AbstractArray{T,N},L} <: AbstractArray{T,N}
         A::M
-        parts::P
+        partition::Dict{Symbol,NTuple{N,UnitRange{Int}}}
+        precompute::Bool
+        parts::Dict{Symbol,SubArray{T,N,M,NTuple{N,UnitRange{Int}},L}}
+        function PartedArray(A::M,
+                partition::Dict{Symbol,NTuple{N,UnitRange{Int}}}, parts::Dict{Symbol,SubArray{T,N,M,NTuple{N,UnitRange{Int}},L}},
+                precompute::Bool) where {M<:AbstractArray{T,N},L} where {T,N}
+            if precompute
+                new{T,N,M,L}(A, partition, precompute, parts)
+            else
+                new{T,N,M,L}(A, partition, precompute)
+            end
+        end
+        function PartedArray(A::M, partition::Dict{Symbol,NTuple{N,UnitRange{Int}}}) where M<:AbstractArray{T,N} where {T,N}
+            new{T,N,M,true}(A, partition, false)
+        end
+    end
+    function PartedArray(A::AbstractArray{T,N}, partition::Dict{Symbol,I}, precompute::Bool) where {T,N,I}
+        if precompute
+            M = typeof(A)
+            parts = Dict{Symbol,SubArray{T,N,M,NTuple{N,UnitRange{Int}},false}}()
+            for (key,val) in pairs(partition)
+                parts[key] = view(A,val...)
+            end
+            PartedArray(A, partition, parts, precompute)
+        else
+            PartedArray(A, partition)
+        end
+    end
+
+
+    size(A::PartedArray) = size(A.A)
+    getindex(A::PartedArray, i::Int) = getindex(A.A, i)
+    getindex(A::PartedArray, I::Vararg{Int,2}) = A.A[I[1], I[2]]
+    getindex(A::PartedArray, I...) = getindex(A.A, I...)
+    setindex(A::PartedArray, I...) = setindex(A.A, I...)
+    setindex!(A::PartedArray, v, i::Int) = setindex!(A.A, v, i)
+    setindex!(A::PartedArray, v, I::Vararg{Int, 2}) = A.A[I[1], I[2]]
+    IndexStyle(A::PartedArray) = IndexCartesian()
+    length(A::PartedArray) = length(A.A)
+
+    +(A::PartedArray, B) = A.A + B
+    +(B, A::PartedArray) = B + A.A
+    getindex(A::PartedArray, p::Symbol) = view(A.A, A.parts[p]...)
+    function Base.getproperty(A::PartedArray{T,N,I}, p::Symbol) where {T,N,I}
+        if p == :A || p == :parts
+            getfield(A,p)
+        else
+            if getfield(A,:precompute)
+                return getfield(A,:parts)[p]
+            else
+                return view(getfield(A,:A),getfield(A,:partition)[p]...)
+            end
+        end
+    end
+
+    struct BlockArray{T,N,M<:AbstractArray{T,N},P,NP,I} <: AbstractArray{T,N}
+        A::M
+        parts::NamedTuple{P,NTuple{NP,I}}
     end
     function BlockArray(A::AbstractMatrix,lengths::NTuple{N,Int},names::NTuple{N,Symbol}) where {N,T}
         parts = create_partition2(lengths,names)
