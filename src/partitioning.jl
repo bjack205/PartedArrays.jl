@@ -43,7 +43,7 @@ function cart2(i,n,m)
 end
 
 function create_partition2(len1::NTuple{N1,Int},len2::NTuple{N2,Int},
-        names::NTuple{N1,Symbol}) where {N1,N2}
+        names::Val{NAMES}) where {N1,N2,NAMES}
     n1 = length(len1)
     n2 = length(len2)
     partition = create_partition2(len1,len2)
@@ -63,6 +63,4 @@ function combine_names(names1,names2)
         Symbol(string(names1[i])*string(names2[j]))
     end
     partition = map(get_inds, ntuple(i->i,n1*n2))
-    Val(partition)
 end
-create_partition2(lengths::NTuple{N,Int}, names::NTuple{N,Symbol}) where N = create_partition2(lengths,lengths,names,names)
