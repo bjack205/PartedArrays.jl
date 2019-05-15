@@ -67,9 +67,11 @@ module PartedArrays
     length(A::PartedArray) = length(A.A)
     Base.keys(A::PartedArray) = keys(A.part)
     Base.copy(A::PartedArray) = PartedArray(copy(A.A),A.parts)
-    +(A::PartedArray, B::AbstractArray) = A.A + B
-    +(B::AbstractArray, A::PartedArray) = B + A.A
-    +(A::PartedArray, B::PartedArray) = A.A + B.A
+    Base.zero(A::PartedArray) = PartedArray(zero(A.A), A.parts)
+    +(A::PartedArray, B::AbstractArray) = PartedArray(A.A + B, A.parts)
+    +(B::AbstractArray, A::PartedArray) = PartedArray(B + A.A, A.parts)
+    +(A::PartedArray, B::PartedArray) = PartedArray(A.A + B.A, merge(A.parts, B.parts))
+    +(A::PartedArray, b::Real) = PartedArray(A.A .+ b, A.parts)
     getindex(A::PartedArray, p::Symbol) = view(getfield(A,:A), getfield(A,:parts)[p]...)
     getindex(A::PartedVector, p::Symbol) = view(getfield(A,:A), getfield(A,:parts)[p])
     function Base.getproperty(A::PartedArray{T,N,I}, p::Symbol) where {T,N,I}
