@@ -1,4 +1,6 @@
 # PartedArrays.jl
+![Build Status](https://travis-ci.org/bjack205/PartedArrays.jl.svg?branch=master)
+[![codecov](https://codecov.io/gh/bjack205/PartedArrays/branch/master/graph/badge.svg)](https://codecov.io/gh/RoboticExplorationLab/TrajectoryOptimization.jl)
 
 PartedArrays was written to make it easier to work with arrays that are naturally partitioned into sub-arrays. PartedArrays keeps the memory together in one block and simply stores fixed views into the arrays rather that storing the sub-arrays as separate entities, like [BlockArrays.jl](https://github.com/JuliaArrays/BlockArrays.jl).
 
